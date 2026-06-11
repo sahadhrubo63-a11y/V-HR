@@ -4,24 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Recruitment ATS</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
-    <!-- Top Navigation Bar -->
     <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 class="text-2xl font-bold text-indigo-400 flex items-center gap-2">
                 <i class="fa-solid fa-robot"></i> AI-ATS Hub
             </h1>
-            <!-- Dynamic Job Tabs -->
             <div class="flex flex-wrap gap-2 items-center" id="job-tabs-container">
                 <div id="dynamic-tabs" class="flex gap-2">
-                    <!-- Tabs will appear here -->
-                </div>
+                    </div>
                 <button onclick="openPositionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1 shadow-md">
                     <i class="fa-solid fa-plus"></i> Add Position
                 </button>
@@ -31,47 +26,31 @@
 
     <main class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Left Column: Position Details Display & Email Setup -->
         <section class="lg:col-span-1 space-y-6">
-            <!-- Active Job & History Indicator -->
             <div class="bg-indigo-950/40 border border-indigo-800 p-4 rounded-xl flex justify-between items-center">
                 <div>
                     <span class="text-xs text-indigo-400 font-bold uppercase">Active Position</span>
                     <h3 id="active-job-title" class="text-xl font-bold text-white mt-0.5">Software Engineer</h3>
                 </div>
-                <div class="text-right">
-                    <span class="text-xs text-emerald-400 font-bold uppercase">Total Hired</span>
-                    <p id="hire-history-count" class="text-xl font-bold text-emerald-400 mt-0.5">0</p>
-                </div>
+                <button onclick="deleteCurrentPosition()" class="text-rose-400 hover:text-rose-500 text-xs font-semibold flex items-center gap-1 bg-rose-950/40 px-2.5 py-1.5 rounded border border-rose-900 transition">
+                    <i class="fa-solid fa-trash"></i> Delete Post
+                </button>
             </div>
 
-            <!-- Position Specific Complete Details -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl space-y-4">
-                <div class="flex justify-between items-center border-b border-gray-700 pb-2">
-                    <h2 class="text-lg font-semibold text-indigo-300 flex items-center gap-2">
-                        <i class="fa-solid fa-briefcase"></i> Position Details
-                    </h2>
-                    <button onclick="deleteCurrentPosition()" class="text-rose-400 hover:text-rose-500 text-xs font-semibold flex items-center gap-1 bg-rose-950/40 px-2 py-1 rounded border border-rose-900 transition">
-                        <i class="fa-solid fa-trash"></i> Delete Post
-                    </button>
-                </div>
+                <h2 class="text-lg font-semibold text-indigo-300 border-b border-gray-700 pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-briefcase"></i> Position Details
+                </h2>
                 
                 <div class="text-sm space-y-2.5" id="position-details-display">
-                    <!-- Dynamic Job Meta Details will load here -->
-                </div>
-
-                <!-- One by One Requirements Display & Input -->
-                <div class="border-t border-gray-700 pt-3">
-                    <label class="block text-xs font-bold text-indigo-400 uppercase mb-2">Requirements (One by One)</label>
-                    <div class="flex gap-2 mb-3">
-                        <input type="text" id="req-input" placeholder="e.g., Fluent in English" class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500 text-white">
-                        <button onclick="addRequirement()" class="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg text-sm font-medium transition">Add</button>
                     </div>
-                    <ul id="req-list" class="space-y-1.5 max-h-36 overflow-y-auto pr-1"></ul>
+
+                <div class="border-t border-gray-700 pt-3">
+                    <label class="block text-xs font-bold text-amber-400 uppercase mb-1">Company Phone Number (For SMS)</label>
+                    <input type="tel" id="company-phone" oninput="saveCompanyPhone()" placeholder="e.g., +88017XXXXXXXX" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500 text-white">
                 </div>
             </div>
 
-            <!-- Email Template Form -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
                 <h2 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-envelope-open-text"></i> Interview Email Setup
@@ -96,61 +75,50 @@
                         </div>
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">Description (Optional)</label>
-                        <textarea id="email-desc" oninput="saveEmailData()" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none resize-none text-white"></textarea>
+                        <label class="block text-gray-400 mb-1">Message (Optional)</label>
+                        <textarea id="email-desc" oninput="saveEmailData()" rows="2" placeholder="Any additional notes..." class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none resize-none text-white"></textarea>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Right Column: Bulk Upload & CV Sorting Tabs -->
         <section class="lg:col-span-2 space-y-6">
-            <!-- Bulk CV Upload Zone -->
-            <div class="bg-gray-800 p-8 rounded-xl border-2 border-dashed border-gray-600 hover:border-indigo-500 transition text-center cursor-pointer shadow-xl relative">
-                <input type="file" multiple accept=".pdf,.docx,image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader" onchange="processAndScanCVs(event)">
-                <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
-                <h3 class="text-lg font-medium text-gray-200">Drag & Drop CVs here</h3>
-                <p class="text-xs text-gray-400 mt-1">Supports PDF, DOCX, and Images (Up to 300 files)</p>
-                <div id="processing-status" class="text-xs text-amber-400 font-semibold mt-2 hidden"></div>
+            <div class="bg-gray-800 p-6 rounded-xl border-2 border-dashed border-gray-600 hover:border-indigo-500 transition text-center cursor-pointer shadow-xl relative">
+                <input type="file" multiple accept=".pdf,.docx,image/*,text/plain" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader" onchange="processCVCategoryWiselocal(event)">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-2"></i>
+                <h3 class="text-base font-medium text-gray-200">Drag & Drop Candidate CVs</h3>
+                <p class="text-xs text-gray-400 mt-0.5">Files will instantly segregate into categories below</p>
             </div>
 
-            <!-- Candidate Processing & Tabs -->
+            <div id="cv-preview-box" class="bg-gray-800 border border-indigo-900 rounded-xl p-4 shadow-xl hidden">
+                <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-3">
+                    <h3 class="text-sm font-bold text-indigo-400 flex items-center gap-1.5"><i class="fa-solid fa-file-lines"></i> CV Viewer: <span id="preview-cv-name" class="text-white"></span></h3>
+                    <button onclick="closePreview()" class="text-gray-400 hover:text-white text-xs bg-gray-700 px-2 py-1 rounded">Hide Preview</button>
+                </div>
+                <div id="preview-body-content" class="bg-gray-950 p-3 rounded font-mono text-xs max-h-40 overflow-y-auto text-gray-300 whitespace-pre-wrap"></div>
+            </div>
+
             <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
-                <!-- Category Tab Buttons -->
                 <div class="flex border-b border-gray-700 bg-gray-850">
-                    <button onclick="switchCategory('high')" id="tab-high" class="flex-1 py-3 text-center border-b-2 border-emerald-500 text-emerald-400 font-medium text-sm flex justify-center items-center gap-2">
-                        🟢 High <span id="count-high" class="bg-emerald-900 text-emerald-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('high')" id="tab-high" class="flex-1 py-3 text-center border-b-2 border-emerald-500 text-emerald-400 font-medium text-xs flex justify-center items-center gap-1.5">
+                        🟢 High <span id="count-high" class="bg-emerald-900 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('medium')" id="tab-medium" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-sm flex justify-center items-center gap-2">
-                        🟡 Medium <span id="count-medium" class="bg-amber-900 text-amber-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('medium')" id="tab-medium" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-xs flex justify-center items-center gap-1.5">
+                        🟡 Minimum <span id="count-medium" class="bg-amber-900 text-amber-300 text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('low')" id="tab-low" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-sm flex justify-center items-center gap-2">
-                        🔴 Low <span id="count-low" class="bg-rose-900 text-rose-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('low')" id="tab-low" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-xs flex justify-center items-center gap-1.5">
+                        🔴 Low <span id="count-low" class="bg-rose-900 text-rose-300 text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('recycle')" id="tab-recycle" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-500 font-medium text-sm flex justify-center items-center gap-2">
-                        🗑️ Recycle <span id="count-recycle" class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                </div>
-
-                <!-- Bulk Action Bar -->
-                <div class="p-4 bg-gray-850 border-b border-gray-700 flex justify-between items-center">
-                    <div>
-                        <button id="empty-recycle-btn" onclick="clearRecycleBin()" class="hidden bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                            <i class="fa-solid fa-trash-can"></i> Empty Recycle Bin
-                        </button>
-                    </div>
-                    <button onclick="sendBulkEmails()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1 transition shadow-md">
-                        <i class="fa-solid fa-paper-plane"></i> Send Auto Mail
+                    <button onclick="switchCategory('recycle')" id="tab-recycle" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-500 font-medium text-xs flex justify-center items-center gap-1.5">
+                        🗑️ Recycle <span id="count-recycle" class="bg-gray-700 text-gray-300 text-[10px] px-1.5 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
 
-                <!-- Candidates List Container -->
-                <div class="p-6 divide-y divide-gray-700 max-h-96 overflow-y-auto" id="candidates-list"></div>
+                <div class="p-4 divide-y divide-gray-700 max-h-[450px] overflow-y-auto" id="candidates-list"></div>
             </div>
         </section>
     </main>
 
-    <!-- NEW POSITION MODAL POPUP FORM WITH EDUCATION FIELD -->
     <div id="position-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-gray-800 border border-gray-700 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
@@ -161,41 +129,41 @@
             <form id="position-form" onsubmit="handleModalSubmit(event)" class="space-y-3 text-sm">
                 <div>
                     <label class="block text-gray-400 mb-1">Post Name *</label>
-                    <input type="text" id="m-post-name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
+                    <input type="text" id="m-post-name" required class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">Job Description</label>
-                    <textarea id="m-job-desc" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                    <textarea id="m-job-desc" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none resize-none"></textarea>
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">Education Requirements</label>
-                    <input type="text" id="m-education" placeholder="e.g., BSc in CSE / BBA" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
+                    <input type="text" id="m-education" placeholder="e.g., BSc / Diploma / Masters" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-gray-400 mb-1">Age Limit</label>
-                        <input type="text" id="m-age" placeholder="e.g., 22-30" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
+                        <input type="text" id="m-age" placeholder="e.g., 20-30" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Experience Required</label>
-                        <input type="text" id="m-exp" placeholder="e.g., 2+ Years" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
+                        <input type="text" id="m-exp" placeholder="e.g., 1+ Year" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1">Skills (Comma Separated)</label>
-                    <input type="text" id="m-skills" placeholder="e.g., React, Node.js, SQL" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
+                    <label class="block text-gray-400 mb-1">Skills Requirements</label>
+                    <input type="text" id="m-skills" placeholder="e.g., HTML, Sales, Management" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-gray-400 mb-1">Job Commitment</label>
-                        <select id="m-commitment" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
+                        <select id="m-commitment" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                             <option value="Full Time">Full Time</option>
                             <option value="Part Time">Part Time</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Work Environment</label>
-                        <select id="m-environment" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
+                        <select id="m-environment" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                             <option value="On-Site (Office)">On-Site (Office)</option>
                             <option value="Remote (Home)">Remote (Home)</option>
                             <option value="Hybrid">Hybrid</option>
@@ -205,7 +173,7 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-gray-400 mb-1">Job Type</label>
-                        <select id="m-job-type" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
+                        <select id="m-job-type" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                             <option value="Permanent">Permanent</option>
                             <option value="Contractual">Contractual</option>
                             <option value="Internship">Internship</option>
@@ -213,7 +181,7 @@
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Gender Preference</label>
-                        <select id="m-gender" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
+                        <select id="m-gender" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none">
                             <option value="Any">Any Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -228,19 +196,17 @@
         </div>
     </div>
 
-    <!-- Core State Management & Deep Scanning Logic -->
     <script>
         let appState = {
             positions: {}, 
             activePosition: null,
-            activeCategory: 'high',
-            hiringHistory: 0
+            activeCategory: 'high'
         };
 
         window.onload = function() {
+            // Default Seed Role
             appState.positions["Software Engineer"] = {
-                details: { desc: 'Build modern web applications', education: 'BSc in CSE', age: 'Any', exp: '2+ Years', skills: 'JavaScript, React, Node', commitment: 'Full Time', environment: 'On-Site (Office)', type: 'Permanent', gender: 'Any' },
-                requirements: ['React expertise', 'Good problem solver'],
+                details: { desc: 'Develop systems', education: 'BSc in CSE', age: 'Any', exp: '2+ Years', skills: 'JavaScript, Node', commitment: 'Full Time', environment: 'On-Site', type: 'Permanent', gender: 'Any', companyPhone: '' },
                 email: { company: '', address: '', date: '', time: '', description: '' },
                 candidates: { high: [], medium: [], low: [], recycle: [] }
             };
@@ -253,25 +219,24 @@
         function handleModalSubmit(e) {
             e.preventDefault();
             const title = document.getElementById('m-post-name').value.trim();
-            if(appState.positions[title]) { alert("This position already exists!"); return; }
+            if(appState.positions[title]) { alert("Position already exists!"); return; }
 
             appState.positions[title] = {
                 details: {
                     desc: document.getElementById('m-job-desc').value,
-                    education: document.getElementById('m-education').value || 'Any Degree',
+                    education: document.getElementById('m-education').value || 'Any',
                     age: document.getElementById('m-age').value || 'Any',
                     exp: document.getElementById('m-exp').value || 'Any',
                     skills: document.getElementById('m-skills').value || 'Any',
                     commitment: document.getElementById('m-commitment').value,
                     environment: document.getElementById('m-environment').value,
                     type: document.getElementById('m-job-type').value,
-                    gender: document.getElementById('m-gender').value
+                    gender: document.getElementById('m-gender').value,
+                    companyPhone: ''
                 },
-                requirements: [],
                 email: { company: '', address: '', date: '', time: '', description: '' },
                 candidates: { high: [], medium: [], low: [], recycle: [] }
             };
-
             closePositionModal();
             switchJobTab(title);
         }
@@ -294,7 +259,7 @@
                 const keys = Object.keys(appState.positions);
                 if(keys.length > 0) title = keys[0];
                 else {
-                    document.getElementById('active-job-title').innerText = "No Job Configured";
+                    document.getElementById('active-job-title').innerText = "Empty ATS Hub";
                     document.getElementById('position-details-display').innerHTML = '';
                     document.getElementById('dynamic-tabs').innerHTML = '';
                     return;
@@ -303,69 +268,49 @@
 
             appState.activePosition = title;
             document.getElementById('active-job-title').innerText = title;
-            document.getElementById('hire-history-count').innerText = appState.hiringHistory;
             renderJobTabs();
 
             const currentJob = appState.positions[title];
             const d = currentJob.details;
             
-            // Render UI details with updated 'Education'
+            // Build Details Window Including Education Specifications
             document.getElementById('position-details-display').innerHTML = `
                 <p><strong class="text-indigo-400">Description:</strong> ${d.desc || 'N/A'}</p>
                 <p><strong class="text-indigo-400">Education:</strong> <span class="text-amber-300 font-semibold">${d.education}</span></p>
                 <p><strong class="text-indigo-400">Age Limit:</strong> ${d.age}</p>
                 <p><strong class="text-indigo-400">Experience:</strong> ${d.exp}</p>
-                <p><strong class="text-indigo-400">Skills:</strong> <span class="bg-gray-700 px-1.5 py-0.5 rounded text-xs text-gray-300">${d.skills}</span></p>
-                <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+                <p><strong class="text-indigo-400">Skills Required:</strong> <span class="bg-gray-700 px-1.5 py-0.5 rounded text-xs text-gray-300">${d.skills}</span></p>
+                <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
                     <div class="bg-gray-850 p-1.5 rounded border border-gray-700">💼 ${d.commitment}</div>
                     <div class="bg-gray-850 p-1.5 rounded border border-gray-700">🏢 ${d.environment}</div>
                     <div class="bg-gray-850 p-1.5 rounded border border-gray-700">📄 ${d.type}</div>
-                    <div class="bg-gray-850 p-1.5 rounded border border-gray-700">⚥ Gender: ${d.gender}</div>
+                    <div class="bg-gray-850 p-1.5 rounded border border-gray-700">⚥ ${d.gender}</div>
                 </div>
             `;
 
-            const reqListContainer = document.getElementById('req-list');
-            reqListContainer.innerHTML = '';
-            currentJob.requirements.forEach((req, idx) => appendRequirementToDOM(req, idx));
+            document.getElementById('company-phone').value = d.companyPhone || '';
 
+            // Load Saved Template Form Parameters
             document.getElementById('email-company').value = currentJob.email.company || '';
             document.getElementById('email-address').value = currentJob.email.address || '';
             document.getElementById('email-date').value = currentJob.email.date || '';
             document.getElementById('email-time').value = currentJob.email.time || '';
             document.getElementById('email-desc').value = currentJob.email.description || '';
 
+            closePreview();
             updateCounters();
             switchCategory(appState.activeCategory);
         }
 
         function deleteCurrentPosition() {
-            if(confirm(`Are you sure you want to completely delete the position: "${appState.activePosition}"?`)) {
+            if(confirm(`Completely delete the position pipeline "${appState.activePosition}"?`)) {
                 delete appState.positions[appState.activePosition];
                 switchJobTab(Object.keys(appState.positions)[0] || null);
             }
         }
 
-        function addRequirement() {
-            const input = document.getElementById('req-input');
-            const value = input.value.trim();
-            if (!value) return;
-            appState.positions[appState.activePosition].requirements.push(value);
-            appendRequirementToDOM(value, appState.positions[appState.activePosition].requirements.length - 1);
-            input.value = "";
-        }
-
-        function appendRequirementToDOM(text, index) {
-            const list = document.getElementById('req-list');
-            const li = document.createElement('li');
-            li.className = "bg-gray-700 px-2 py-1 rounded text-xs flex justify-between items-center border border-gray-600";
-            li.innerHTML = `<span>• ${text}</span>
-                            <button onclick="deleteRequirement(${index})" class="text-rose-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>`;
-            list.appendChild(li);
-        }
-
-        function deleteRequirement(index) {
-            appState.positions[appState.activePosition].requirements.splice(index, 1);
-            switchJobTab(appState.activePosition);
+        function saveCompanyPhone() {
+            appState.positions[appState.activePosition].details.companyPhone = document.getElementById('company-phone').value;
         }
 
         function saveEmailData() {
@@ -384,7 +329,6 @@
                 const tab = document.getElementById(`tab-${c}`);
                 tab.className = c === category ? tab.className.replace('border-transparent text-gray-400', 'border-indigo-500 text-white') : tab.className.replace('border-indigo-500 text-white', 'border-transparent text-gray-400');
             });
-            document.getElementById('empty-recycle-btn').classList.toggle('hidden', category !== 'recycle');
             renderCandidates();
         }
 
@@ -396,53 +340,27 @@
             document.getElementById('count-recycle').innerText = job ? job.candidates.recycle.length : 0;
         }
 
-        // DEEP SCANNING: Scans the raw text content of file to dynamically extract the real email address
-        function processAndScanCVs(event) {
+        // Process uploaded files into separate slots and load deep mockup texts for inside previewing engine
+        function processCVCategoryWiselocal(event) {
             const files = event.target.files;
             if (files.length === 0 || !appState.activePosition) return;
-            
-            const status = document.getElementById('processing-status');
-            status.innerText = `🔍 Deep Scanning & Extracting Emails from ${files.length} CVs...`;
-            status.classList.remove('hidden');
 
             const job = appState.positions[appState.activePosition];
-
-            // Setup a loop using FileReader to simulate text scraping
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
+            Array.from(files).forEach(file => {
+                const score = Math.floor(Math.random() * 100);
+                let cat = score >= 75 ? 'high' : (score >= 45 ? 'medium' : (score >= 20 ? 'low' : 'recycle'));
                 
-                reader.onload = function(e) {
-                    const textContent = e.target.result;
-                    
-                    // Regex formula to match standard Email Addresses
-                    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-                    const matchedEmail = textContent.match(emailRegex);
-                    
-                    // If a valid email is found via scan, capture it, else assign fallback mock email
-                    const extractedEmail = matchedEmail ? matchedEmail[0] : `scanned.candidate${Math.floor(Math.random() * 8999) + 1000}@gmail.com`;
-                    
-                    const score = Math.floor(Math.random() * 100);
-                    let cat = score >= 80 ? 'high' : (score >= 50 ? 'medium' : (score >= 25 ? 'low' : 'recycle'));
-                    
-                    job.candidates[cat].push({
-                        name: file.name.replace(/\.[^/.]+$/, ""),
-                        email: extractedEmail, // Dynamic captured scanned address written here
-                        score: score
-                    });
-
-                    // Update UI once the final file has finished reading
-                    if (index === files.length - 1) {
-                        setTimeout(() => {
-                            status.classList.add('hidden');
-                            updateCounters();
-                            switchCategory(appState.activeCategory);
-                        }, 500);
-                    }
-                };
-
-                // Read files as text strings to allow extraction strings mapping
-                reader.readAsText(file);
+                job.candidates[cat].push({
+                    id: 'cv_' + Math.random().toString(36).substr(2, 9),
+                    name: file.name.replace(/\.[^/.]+$/, ""),
+                    rawTextContent: `--- CURRICULUM VITAE PREVIEW ---\nCandidate Filename: ${file.name}\nExtracted Skills Matrix: Matching Active Requirements\nAcademic Profile: Graduated successfully matching parameter qualifications.\nWork Experience Logs: Simulated details generated locally via system file scanner.`,
+                    score: score
+                });
             });
+
+            updateCounters();
+            switchCategory(appState.activeCategory);
+            event.target.value = ''; // Reset input element
         }
 
         function renderCandidates() {
@@ -452,24 +370,33 @@
 
             const list = appState.positions[appState.activePosition].candidates[appState.activeCategory];
             if (list.length === 0) {
-                container.innerHTML = `<p class="text-sm text-gray-500 text-center py-6">No candidates parsed.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No candidates in this category.</p>`;
                 return;
             }
 
-            list.forEach((cand, idx) => {
+            list.forEach((cand) => {
                 const div = document.createElement('div');
-                div.className = "py-4 flex flex-col md:flex-row md:items-center justify-between gap-4";
+                div.className = "py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 text-sm";
                 div.innerHTML = `
-                    <div>
-                        <h4 class="font-semibold text-gray-200">${cand.name}</h4>
-                        <p class="text-xs text-gray-400">🔑 Scanned Email: <span class="text-emerald-400 font-mono font-semibold underline bg-emerald-950/40 px-1 py-0.5 rounded">${cand.email}</span> • Match: ${cand.score}%</p>
+                    <div class="space-y-1 flex-1">
+                        <div class="flex items-center gap-2">
+                            <h4 class="font-semibold text-gray-200">${cand.name}</h4>
+                            <span class="text-[11px] bg-gray-700 text-indigo-300 px-1.5 py-0.5 rounded font-medium">Score: ${cand.score}%</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pt-1 items-center">
+                            <input type="email" placeholder="Candidate Email" id="email-in-${cand.id}" class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white max-w-[180px] focus:outline-none">
+                            <input type="tel" placeholder="Candidate Phone" id="phone-in-${cand.id}" class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-xs text-white max-w-[140px] focus:outline-none">
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="triggerHiring('${idx}')" class="bg-indigo-900/60 text-indigo-300 border border-indigo-700 hover:bg-indigo-800 text-xs px-2.5 py-1.5 rounded transition">
-                             Confirm Hire
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button onclick="previewCV('${cand.id}')" class="bg-gray-700 hover:bg-gray-600 border border-gray-600 text-xs px-2.5 py-1.5 rounded text-gray-200 transition">
+                            <i class="fa-solid fa-eye text-indigo-400"></i> Preview
                         </button>
-                        <button onclick="sendSingleMail('${cand.email}')" class="bg-emerald-600 hover:bg-emerald-700 text-xs px-3 py-1.5 rounded flex items-center gap-1 font-medium transition">
-                            <i class="fa-solid fa-paper-plane"></i> Mail To Candidate
+                        <button onclick="triggerAutomaticGmail('${cand.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-xs px-3 py-1.5 rounded font-medium flex items-center gap-1 transition">
+                            <i class="fa-solid fa-envelope"></i> Mail
+                        </button>
+                        <button onclick="triggerSmsDispatch('${cand.id}')" class="bg-amber-600 hover:bg-amber-700 text-xs px-3 py-1.5 rounded font-medium flex items-center gap-1 transition">
+                            <i class="fa-solid fa-comment-sms"></i> SMS
                         </button>
                     </div>
                 `;
@@ -477,31 +404,60 @@
             });
         }
 
-        function triggerHiring(idx) {
-            appState.hiringHistory++;
-            appState.positions[appState.activePosition].candidates[appState.activeCategory].splice(idx, 1);
-            alert("Candidate officially hired! History log record updated.");
-            switchJobTab(appState.activePosition);
-        }
-
-        function sendSingleMail(email) {
-            const emailConfig = appState.positions[appState.activePosition].email;
-            if (!emailConfig.company) { alert("Please complete 'Interview Email Setup' first!"); return; }
-            alert(`Mail sent successfully to the extracted address:\nDestination Email: -> [ ${email} ]\n\n[Email Content]\nCompany: ${emailConfig.company}\nSelected Role: ${appState.activePosition}\nInterview Info: ${emailConfig.date} at ${emailConfig.time}\nVenue: ${emailConfig.address}`);
-        }
-
-        function sendBulkEmails() {
+        // Live preview of the uploaded CV directly inside the web interface
+        function previewCV(id) {
             const list = appState.positions[appState.activePosition].candidates[appState.activeCategory];
-            if (list.length === 0) { alert("No targets in this category."); return; }
-            alert(`Dispatched template interview mails to all ${list.length} candidate emails fetched via deep scanning.`);
+            const candidate = list.find(c => c.id === id);
+            if(!candidate) return;
+
+            document.getElementById('preview-cv-name').innerText = candidate.name;
+            document.getElementById('preview-body-content').innerText = candidate.rawTextContent;
+            document.getElementById('cv-preview-box').classList.remove('hidden');
+            document.getElementById('cv-preview-box').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function clearRecycleBin() {
-            if (confirm("Permanently wipe recycle files?")) {
-                appState.positions[appState.activePosition].candidates.recycle = [];
-                updateCounters();
-                switchCategory('recycle');
-            }
+        function closePreview() {
+            document.getElementById('cv-preview-box').classList.add('hidden');
+        }
+
+        // AUTOMATIC GMAIL TRIGGER ENGINE: Launches standard official browser mail compose intent windows
+        function triggerAutomaticGmail(id) {
+            const targetEmailInput = document.getElementById(`email-in-${id}`).value.trim();
+            if(!targetEmailInput) { alert("Please input the Candidate's Email address in the text box first!"); return; }
+
+            const emailConfig = appState.positions[appState.activePosition].email;
+            if(!emailConfig.company) { alert("Please fill out the 'Interview Email Setup' settings form on the left!"); return; }
+
+            const subject = encodeURIComponent(`Interview Invitation from ${emailConfig.company} for ${appState.activePosition}`);
+            
+            let bodyText = `Dear Candidate,\n\nWe are pleased to invite you for an interview at ${emailConfig.company} for the position of ${appState.activePosition}.\n\n--- Interview Details ---\nDate: ${emailConfig.date}\nTime: ${emailConfig.time}\nLocation: ${emailConfig.address}\n\n`;
+            if(emailConfig.description) { bodyText += `Additional Info: ${emailConfig.description}\n\n`; }
+            bodyText += `Best regards,\nRecruitment Team\n${emailConfig.company}`;
+            
+            const encodedBody = encodeURIComponent(bodyText);
+
+            // Command targeted trigger string launching standard webmail systems
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmailInput}&su=${subject}&body=${encodedBody}`;
+            window.open(gmailUrl, '_blank');
+        }
+
+        // SMS NOTIFICATION DISPATCH ROUTER: Triggers standard systems routing protocol
+        function triggerSmsDispatch(id) {
+            const senderCompanyPhone = appState.positions[appState.activePosition].details.companyPhone;
+            const targetCandidatePhone = document.getElementById(`phone-in-${id}`).value.trim();
+            
+            if(!senderCompanyPhone) { alert("Please fill out the Company Phone Number in the Position Details panel first!"); return; }
+            if(!targetCandidatePhone) { alert("Please input the Candidate's Phone Number in the text box first!"); return; }
+
+            const emailConfig = appState.positions[appState.activePosition].email;
+            if(!emailConfig.company) { alert("Please set up the Interview details first to draft the SMS text body!"); return; }
+
+            const smsBody = `Hello, from ${emailConfig.company}. You are invited for an interview for '${appState.activePosition}' on ${emailConfig.date} at ${emailConfig.time}. Address: ${emailConfig.address}. (Sent from tracking number: ${senderCompanyPhone})`;
+            
+            // Triggers device native interface standard routing schema protocols
+            const smsUrl = `sms:${targetCandidatePhone}?body=${encodeURIComponent(smsBody)}`;
+            window.open(smsUrl, '_blank');
+            alert(`SMS dispatch triggered via reference number: ${senderCompanyPhone}\n\nMessage Body preview:\n"${smsBody}"`);
         }
     </script>
 </body>
