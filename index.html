@@ -4,24 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Recruitment ATS</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
-    <!-- Top Navigation Bar -->
     <header class="bg-gray-800 border-b border-gray-700 p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <h1 class="text-2xl font-bold text-indigo-400 flex items-center gap-2">
-                <i class="fa-solid <i fa-robot"></i> AI-ATS Hub
+                <i class="fa-solid fa-robot"></i> AI-ATS Hub
             </h1>
-            <div class="flex gap-2" id="job-tabs">
-                <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition active-tab">
-                    Software Engineer
-                </button>
-                <button onclick="addNewPosition()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1">
+            <div class="flex flex-wrap gap-2 items-center" id="job-tabs-container">
+                <div id="dynamic-tabs" class="flex gap-2">
+                    </div>
+                <button onclick="addNewPositionPrompt()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1 shadow-md">
                     <i class="fa-solid fa-plus"></i> Add Position
                 </button>
             </div>
@@ -30,26 +26,27 @@
 
     <main class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Left Column: Requirements & Email Config -->
         <section class="lg:col-span-1 space-y-6">
-            <!-- Position Requirements Form -->
+            <div class="bg-indigo-950/40 border border-indigo-800 p-4 rounded-xl">
+                <span class="text-xs text-indigo-400 font-bold uppercase">Active Position</span>
+                <h3 id="active-job-title" class="text-lg font-bold text-white mt-0.5">Software Engineer</h3>
+            </div>
+
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
                 <h2 class="text-lg font-semibold text-indigo-300 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-list-check"></i> Job Requirements
                 </h2>
                 <div class="flex gap-2 mb-4">
                     <input type="text" id="req-input" placeholder="e.g., 3+ years experience in React" 
-                        class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                        class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 text-white">
                     <button onclick="addRequirement()" class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-medium transition">
                         Add
                     </button>
                 </div>
                 <ul id="req-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                    <!-- Dynamic Requirements will appear here -->
-                </ul>
+                    </ul>
             </div>
 
-            <!-- Email Template Form -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-xl">
                 <h2 class="text-lg font-semibold text-emerald-400 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-envelope-open-text"></i> Interview Email Setup
@@ -57,112 +54,315 @@
                 <div class="space-y-3 text-sm">
                     <div>
                         <label class="block text-gray-400 mb-1">Company Name</label>
-                        <input type="text" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none">
+                        <input type="text" id="email-company" oninput="saveEmailData()" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Interview Location/Address</label>
-                        <input type="text" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none">
+                        <input type="text" id="email-address" oninput="saveEmailData()" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-white">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-gray-400 mb-1">Date</label>
-                            <input type="date" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-gray-300">
+                            <input type="date" id="email-date" oninput="saveEmailData()" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-gray-300">
                         </div>
                         <div>
                             <label class="block text-gray-400 mb-1">Time</label>
-                            <input type="time" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-gray-300">
+                            <input type="time" id="email-time" oninput="saveEmailData()" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none text-gray-300">
                         </div>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">Description (Optional)</label>
-                        <textarea rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none resize-none"></textarea>
+                        <textarea id="email-desc" oninput="saveEmailData()" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none resize-none text-white"></textarea>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Right Column: Bulk Upload & CV Sorting Tabs -->
         <section class="lg:col-span-2 space-y-6">
-            <!-- Bulk CV Upload Zone -->
             <div class="bg-gray-800 p-8 rounded-xl border-2 border-dashed border-gray-600 hover:border-indigo-500 transition text-center cursor-pointer shadow-xl relative">
-                <input type="file" multiple accept=".pdf,.docx,image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader">
+                <input type="file" multiple accept=".pdf,.docx,image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader" onchange="mockCvProcessing(event)">
                 <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
                 <h3 class="text-lg font-medium text-gray-200">Drag & Drop CVs here</h3>
                 <p class="text-xs text-gray-400 mt-1">Supports PDF, DOCX, and Images (Up to 300 files)</p>
+                <div id="processing-status" class="text-xs text-amber-400 font-semibold mt-2 hidden"></div>
             </div>
 
-            <!-- Candidate Processing & Tabs -->
             <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-xl overflow-hidden">
-                <!-- Category Tab Buttons -->
                 <div class="flex border-b border-gray-700 bg-gray-850">
-                    <button class="flex-1 py-3 text-center border-b-2 border-emerald-500 text-emerald-400 font-medium text-sm flex justify-center items-center gap-2">
-                        🟢 High <span class="bg-emerald-900 text-emerald-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('high')" id="tab-high" class="flex-1 py-3 text-center border-b-2 border-emerald-500 text-emerald-400 font-medium text-sm flex justify-center items-center gap-2">
+                        🟢 High <span id="count-high" class="bg-emerald-900 text-emerald-300 text-xs px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-amber-400 font-medium text-sm text-gray-400 flex justify-center items-center gap-2">
-                        🟡 Medium <span class="bg-amber-900 text-amber-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('medium')" id="tab-medium" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-sm flex justify-center items-center gap-2">
+                        🟡 Medium <span id="count-medium" class="bg-amber-900 text-amber-300 text-xs px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-rose-400 font-medium text-sm text-gray-400 flex justify-center items-center gap-2">
-                        🔴 Low <span class="bg-rose-900 text-rose-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('low')" id="tab-low" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-400 font-medium text-sm flex justify-center items-center gap-2">
+                        🔴 Low <span id="count-low" class="bg-rose-900 text-rose-300 text-xs px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-gray-300 font-medium text-sm text-gray-500 flex justify-center items-center gap-2">
-                        🗑️ Recycle <span class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchCategory('recycle')" id="tab-recycle" class="flex-1 py-3 text-center border-b-2 border-transparent text-gray-500 font-medium text-sm flex justify-center items-center gap-2">
+                        🗑️ Recycle <span id="count-recycle" class="bg-gray-700 text-gray-300 text-xs px-2 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
 
-                <!-- Bulk Mail Action Bar -->
                 <div class="p-4 bg-gray-850 border-b border-gray-700 flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" class="rounded border-gray-600 bg-gray-700 text-indigo-600 focus:ring-indigo-500">
-                        <span class="text-xs text-gray-400">Select All Candidates</span>
+                    <div>
+                        <button id="empty-recycle-btn" onclick="clearRecycleBin()" class="hidden bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-400 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-trash-can"></i> Empty Recycle Bin
+                        </button>
                     </div>
-                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1 transition shadow-md">
+                    <button onclick="sendBulkEmails()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center gap-1 transition shadow-md">
                         <i class="fa-solid fa-paper-plane"></i> Send Auto Mail
                     </button>
                 </div>
 
-                <!-- Candidates List Container -->
                 <div class="p-6 divide-y divide-gray-700 max-h-96 overflow-y-auto" id="candidates-list">
-                    <!-- Sample Candidate Row -->
-                    <div class="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 first:pt-0 last:pb-0">
-                        <div>
-                            <h4 class="font-semibold text-gray-200">John Doe</h4>
-                            <p class="text-xs text-gray-400">johndoe@email.com • <span class="text-indigo-400">Match: 92%</span></p>
-                        </div>
-                        <div class="flex items-center gap-2 self-end md:self-auto">
-                            <button class="bg-gray-700 hover:bg-gray-600 text-xs px-3 py-1.5 rounded border border-gray-600 flex items-center gap-1">
-                                <i class="fa-solid fa-circle-question text-indigo-400"></i> AI Q&A
-                            </button>
-                            <button class="bg-emerald-600 hover:bg-emerald-700 text-xs px-3 py-1.5 rounded flex items-center gap-1 font-medium">
-                                <i class="fa-solid fa-paper-plane"></i> Mail
-                            </button>
-                        </div>
                     </div>
-                </div>
             </div>
         </section>
-
     </main>
 
-    <!-- Simple JS for Basic Interactivity -->
     <script>
+        // Global App State to handle isolated tabs
+        let appState = {
+            positions: {}, // Format: { "Job Title": { requirements: [], email: {}, candidates: {high:[], medium:[], low:[], recycle:[]} } }
+            activePosition: null,
+            activeCategory: 'high'
+        };
+
+        // Initialize with default job post
+        window.onload = function() {
+            createPositionData("Software Engineer");
+        };
+
+        function addNewPositionPrompt() {
+            const title = prompt("Enter the new position name (e.g., HR Manager, Frontend Developer):");
+            if (title && title.trim() !== "") {
+                const cleanTitle = title.trim();
+                if (appState.positions[cleanTitle]) {
+                    alert("This job position already exists!");
+                    return;
+                }
+                createPositionData(cleanTitle);
+            }
+        }
+
+        function createPositionData(title) {
+            appState.positions[title] = {
+                requirements: [],
+                email: { company: '', address: '', date: '', time: '', description: '' },
+                candidates: { high: [], medium: [], low: [], recycle: [] }
+            };
+            switchJobTab(title);
+        }
+
+        function renderJobTabs() {
+            const container = document.getElementById('dynamic-tabs');
+            container.innerHTML = '';
+
+            Object.keys(appState.positions).forEach(title => {
+                const btn = document.createElement('button');
+                const isActive = title === appState.activePosition;
+                btn.className = `px-4 py-2 rounded-lg text-sm font-medium transition ${isActive ? 'bg-indigo-600 text-white shadow' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'}`;
+                btn.innerText = title;
+                btn.onclick = () => switchJobTab(title);
+                container.appendChild(btn);
+            });
+        }
+
+        function switchJobTab(title) {
+            appState.activePosition = title;
+            document.getElementById('active-job-title').innerText = title;
+            renderJobTabs();
+
+            // Load saved data for this specific job position
+            const currentJob = appState.positions[title];
+            
+            // 1. Reload Requirements List
+            const reqListContainer = document.getElementById('req-list');
+            reqListContainer.innerHTML = '';
+            currentJob.requirements.forEach((req, idx) => {
+                appendRequirementToDOM(req, idx);
+            });
+
+            // 2. Reload Email Fields
+            document.getElementById('email-company').value = currentJob.email.company || '';
+            document.getElementById('email-address').value = currentJob.email.address || '';
+            document.getElementById('email-date').value = currentJob.email.date || '';
+            document.getElementById('email-time').value = currentJob.email.time || '';
+            document.getElementById('email-desc').value = currentJob.email.description || '';
+
+            // 3. Reload Categories and Candidates
+            updateCounters();
+            switchCategory(appState.activeCategory);
+        }
+
         function addRequirement() {
             const input = document.getElementById('req-input');
             const value = input.value.trim();
-            if (value === "") return;
+            if (value === "" || !appState.activePosition) return;
 
-            const list = document.getElementById('req-list');
-            const li = document.createElement('li');
-            li.className = "bg-gray-700 px-3 py-2 rounded-lg text-sm flex justify-between items-center border border-gray-600";
-            li.innerHTML = `<span>${value}</span>
-                            <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-500">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>`;
-            list.appendChild(li);
+            const currentJob = appState.positions[appState.activePosition];
+            currentJob.requirements.push(value);
+            
+            appendRequirementToDOM(value, currentJob.requirements.length - 1);
             input.value = "";
         }
 
-        function addNewPosition() {
-            alert("This will prompt to add a new isolated tab for another job post!");
+        function appendRequirementToDOM(text, index) {
+            const list = document.getElementById('req-list');
+            const li = document.createElement('li');
+            li.className = "bg-gray-700 px-3 py-2 rounded-lg text-sm flex justify-between items-center border border-gray-600";
+            li.innerHTML = `<span>${text}</span>
+                            <button onclick="deleteRequirement(${index})" class="text-rose-400 hover:text-rose-500">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>`;
+            list.appendChild(li);
+        }
+
+        function deleteRequirement(index) {
+            appState.positions[appState.activePosition].requirements.splice(index, 1);
+            switchJobTab(appState.activePosition); // Refresh list
+        }
+
+        function saveEmailData() {
+            if (!appState.activePosition) return;
+            appState.positions[appState.activePosition].email = {
+                company: document.getElementById('email-company').value,
+                address: document.getElementById('email-address').value,
+                date: document.getElementById('email-date').value,
+                time: document.getElementById('email-time').value,
+                description: document.getElementById('email-desc').value
+            };
+        }
+
+        function switchCategory(category) {
+            appState.activeCategory = category;
+            
+            // UI Tab active classes control
+            const cats = ['high', 'medium', 'low', 'recycle'];
+            cats.forEach(c => {
+                const tabElement = document.getElementById(`tab-${c}`);
+                if (c === category) {
+                    tabElement.classList.add('border-indigo-500', 'text-white');
+                    if (c === 'high') tabElement.classList.add('text-emerald-400');
+                } else {
+                    tabElement.className = tabElement.className.replace(/border-(indigo|emerald)-500|text-white/g, 'border-transparent text-gray-400');
+                }
+            });
+
+            // Show/Hide Empty Recycle button
+            const emptyBtn = document.getElementById('empty-recycle-btn');
+            if (category === 'recycle') {
+                emptyBtn.classList.remove('hidden');
+            } else {
+                emptyBtn.classList.add('hidden');
+            }
+
+            renderCandidates();
+        }
+
+        function updateCounters() {
+            const currentJob = appState.positions[appState.activePosition];
+            document.getElementById('count-high').innerText = currentJob.candidates.high.length;
+            document.getElementById('count-medium').innerText = currentJob.candidates.medium.length;
+            document.getElementById('count-low').innerText = currentJob.candidates.low.length;
+            document.getElementById('count-recycle').innerText = currentJob.candidates.recycle.length;
+        }
+
+        // Mock CV Processing (Simulates Gemini Processing for Now)
+        function mockCvProcessing(event) {
+            const files = event.target.files;
+            if (files.length === 0 || !appState.activePosition) return;
+
+            const status = document.getElementById('processing-status');
+            status.innerText = `⚙️ Processing ${files.length} CVs under current requirements...`;
+            status.classList.remove('hidden');
+
+            setTimeout(() => {
+                const currentJob = appState.positions[appState.activePosition];
+                
+                for (let i = 0; i < files.length; i++) {
+                    const score = Math.floor(Math.random() * 100);
+                    let category = 'recycle';
+                    
+                    if (score >= 85) category = 'high';
+                    else if (score >= 60) category = 'medium';
+                    else if (score >= 35) category = 'low';
+
+                    currentJob.candidates[category].push({
+                        name: files[i].name.replace(/\.[^/.]+$/, ""), // file name without extension
+                        email: `candidate.${Math.floor(Math.random() * 9000) + 1000}@gmail.com`,
+                        score: score
+                    });
+                }
+                
+                status.classList.add('hidden');
+                updateCounters();
+                switchCategory(appState.activeCategory);
+                alert(`${files.length} CVs uploaded and processed automatically!`);
+            }, 1200);
+        }
+
+        function renderCandidates() {
+            const container = document.getElementById('candidates-list');
+            container.innerHTML = '';
+
+            const currentJob = appState.positions[appState.activePosition];
+            const list = currentJob.candidates[appState.activeCategory];
+
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-sm text-gray-500 text-center py-6">No candidates in this category yet.</p>`;
+                return;
+            }
+
+            list.forEach((candidate, idx) => {
+                const div = document.createElement('div');
+                div.className = "py-4 flex flex-col md:flex-row md:items-center justify-between gap-4";
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-semibold text-gray-200">${candidate.name}</h4>
+                        <p class="text-xs text-gray-400">${candidate.email} • <span class="text-indigo-400 font-medium">Match: ${candidate.score}%</span></p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="triggerAiQa('${candidate.name}')" class="bg-gray-700 hover:bg-gray-600 text-xs px-3 py-1.5 rounded border border-gray-600 flex items-center gap-1 transition">
+                            <i class="fa-solid fa-circle-question text-indigo-400"></i> AI Q&A
+                        </button>
+                        <button onclick="sendSingleMail('${candidate.email}')" class="bg-emerald-600 hover:bg-emerald-700 text-xs px-3 py-1.5 rounded flex items-center gap-1 font-medium transition">
+                            <i class="fa-solid fa-paper-plane"></i> Mail
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function clearRecycleBin() {
+            if (confirm("Are you sure you want to permanently delete all CVs from the Recycle Bin?")) {
+                appState.positions[appState.activePosition].candidates.recycle = [];
+                updateCounters();
+                switchCategory('recycle');
+            }
+        }
+
+        function sendSingleMail(email) {
+            const emailConfig = appState.positions[appState.activePosition].email;
+            if (!emailConfig.company) {
+                alert("Please fill up the 'Interview Email Setup' form first!");
+                return;
+            }
+            alert(`Email sent successfully to: ${email}\n\n[Details]\nCompany: ${emailConfig.company}\nPost: ${appState.activePosition}\nAddress: ${emailConfig.address}\nTime: ${emailConfig.date} at ${emailConfig.time}`);
+        }
+
+        function sendBulkEmails() {
+            const list = appState.positions[appState.activePosition].candidates[appState.activeCategory];
+            if (list.length === 0) {
+                alert("No candidates available to send mail in this category.");
+                return;
+            }
+            alert(`Auto processing emails for all ${list.length} candidates in the ${appState.activeCategory.toUpperCase()} category.`);
+        }
+
+        function triggerAiQa(name) {
+            alert(`Generating real-time interview Q&A for ${name} based on requirements...\n\nQuestion: Can you demonstrate your experience regarding the job role specs?\nAnswer: [Valid Answer will be extracted dynamically by Gemini API]`);
         }
     </script>
 </body>
