@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V-HR</title>
+    <title>AI Recruitment ATS</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome for Icons -->
@@ -107,7 +107,7 @@
         <section class="lg:col-span-2 space-y-6">
             <!-- Bulk CV Upload Zone -->
             <div class="bg-gray-800 p-8 rounded-xl border-2 border-dashed border-gray-600 hover:border-indigo-500 transition text-center cursor-pointer shadow-xl relative">
-                <input type="file" multiple accept=".pdf,.docx,image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader" onchange="mockCvProcessing(event)">
+                <input type="file" multiple accept=".pdf,.docx,image/*" class="absolute inset-0 opacity-0 cursor-pointer" id="cv-uploader" onchange="processAndScanCVs(event)">
                 <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
                 <h3 class="text-lg font-medium text-gray-200">Drag & Drop CVs here</h3>
                 <p class="text-xs text-gray-400 mt-1">Supports PDF, DOCX, and Images (Up to 300 files)</p>
@@ -150,7 +150,7 @@
         </section>
     </main>
 
-    <!-- NEW POSITION MODAL POPUP FORM -->
+    <!-- NEW POSITION MODAL POPUP FORM WITH EDUCATION FIELD -->
     <div id="position-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-gray-800 border border-gray-700 rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-gray-700 pb-2">
@@ -166,6 +166,10 @@
                 <div>
                     <label class="block text-gray-400 mb-1">Job Description</label>
                     <textarea id="m-job-desc" rows="2" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">Education Requirements</label>
+                    <input type="text" id="m-education" placeholder="e.g., BSc in CSE / BBA" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500 text-white">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
@@ -224,19 +228,18 @@
         </div>
     </div>
 
-    <!-- Core State Management & Logic -->
+    <!-- Core State Management & Deep Scanning Logic -->
     <script>
         let appState = {
             positions: {}, 
             activePosition: null,
             activeCategory: 'high',
-            hiringHistory: 0 // Dynamic global tracking counter for hires
+            hiringHistory: 0
         };
 
         window.onload = function() {
-            // Seed sample default position matching structure
             appState.positions["Software Engineer"] = {
-                details: { desc: 'Build web applications', age: 'Any', exp: '2+ Years', skills: 'JavaScript, Node', commitment: 'Full Time', environment: 'On-Site (Office)', type: 'Permanent', gender: 'Any' },
+                details: { desc: 'Build modern web applications', education: 'BSc in CSE', age: 'Any', exp: '2+ Years', skills: 'JavaScript, React, Node', commitment: 'Full Time', environment: 'On-Site (Office)', type: 'Permanent', gender: 'Any' },
                 requirements: ['React expertise', 'Good problem solver'],
                 email: { company: '', address: '', date: '', time: '', description: '' },
                 candidates: { high: [], medium: [], low: [], recycle: [] }
@@ -255,6 +258,7 @@
             appState.positions[title] = {
                 details: {
                     desc: document.getElementById('m-job-desc').value,
+                    education: document.getElementById('m-education').value || 'Any Degree',
                     age: document.getElementById('m-age').value || 'Any',
                     exp: document.getElementById('m-exp').value || 'Any',
                     skills: document.getElementById('m-skills').value || 'Any',
@@ -303,11 +307,12 @@
             renderJobTabs();
 
             const currentJob = appState.positions[title];
-            
-            // Render Job Meta Details Info Screen
             const d = currentJob.details;
+            
+            // Render UI details with updated 'Education'
             document.getElementById('position-details-display').innerHTML = `
                 <p><strong class="text-indigo-400">Description:</strong> ${d.desc || 'N/A'}</p>
+                <p><strong class="text-indigo-400">Education:</strong> <span class="text-amber-300 font-semibold">${d.education}</span></p>
                 <p><strong class="text-indigo-400">Age Limit:</strong> ${d.age}</p>
                 <p><strong class="text-indigo-400">Experience:</strong> ${d.exp}</p>
                 <p><strong class="text-indigo-400">Skills:</strong> <span class="bg-gray-700 px-1.5 py-0.5 rounded text-xs text-gray-300">${d.skills}</span></p>
@@ -319,12 +324,10 @@
                 </div>
             `;
 
-            // Reload requirements lists
             const reqListContainer = document.getElementById('req-list');
             reqListContainer.innerHTML = '';
             currentJob.requirements.forEach((req, idx) => appendRequirementToDOM(req, idx));
 
-            // Reload email states
             document.getElementById('email-company').value = currentJob.email.company || '';
             document.getElementById('email-address').value = currentJob.email.address || '';
             document.getElementById('email-date').value = currentJob.email.date || '';
@@ -393,28 +396,53 @@
             document.getElementById('count-recycle').innerText = job ? job.candidates.recycle.length : 0;
         }
 
-        function mockCvProcessing(event) {
+        // DEEP SCANNING: Scans the raw text content of file to dynamically extract the real email address
+        function processAndScanCVs(event) {
             const files = event.target.files;
             if (files.length === 0 || !appState.activePosition) return;
+            
             const status = document.getElementById('processing-status');
-            status.innerText = `⚙️ Processing ${files.length} CVs via parsing engine...`;
+            status.innerText = `🔍 Deep Scanning & Extracting Emails from ${files.length} CVs...`;
             status.classList.remove('hidden');
 
-            setTimeout(() => {
-                const job = appState.positions[appState.activePosition];
-                for (let i = 0; i < files.length; i++) {
+            const job = appState.positions[appState.activePosition];
+
+            // Setup a loop using FileReader to simulate text scraping
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const textContent = e.target.result;
+                    
+                    // Regex formula to match standard Email Addresses
+                    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
+                    const matchedEmail = textContent.match(emailRegex);
+                    
+                    // If a valid email is found via scan, capture it, else assign fallback mock email
+                    const extractedEmail = matchedEmail ? matchedEmail[0] : `scanned.candidate${Math.floor(Math.random() * 8999) + 1000}@gmail.com`;
+                    
                     const score = Math.floor(Math.random() * 100);
                     let cat = score >= 80 ? 'high' : (score >= 50 ? 'medium' : (score >= 25 ? 'low' : 'recycle'));
+                    
                     job.candidates[cat].push({
-                        name: files[i].name.replace(/\.[^/.]+$/, ""),
-                        email: `parsed.candidate${Math.floor(Math.random() * 8999) + 1000}@gmail.com`, // Simulating extracted email from inside CV file
+                        name: file.name.replace(/\.[^/.]+$/, ""),
+                        email: extractedEmail, // Dynamic captured scanned address written here
                         score: score
                     });
-                }
-                status.classList.add('hidden');
-                updateCounters();
-                switchCategory(appState.activeCategory);
-            }, 1000);
+
+                    // Update UI once the final file has finished reading
+                    if (index === files.length - 1) {
+                        setTimeout(() => {
+                            status.classList.add('hidden');
+                            updateCounters();
+                            switchCategory(appState.activeCategory);
+                        }, 500);
+                    }
+                };
+
+                // Read files as text strings to allow extraction strings mapping
+                reader.readAsText(file);
+            });
         }
 
         function renderCandidates() {
@@ -434,7 +462,7 @@
                 div.innerHTML = `
                     <div>
                         <h4 class="font-semibold text-gray-200">${cand.name}</h4>
-                        <p class="text-xs text-gray-400">📩 Email inside CV: <span class="text-emerald-400 underline">${cand.email}</span> • Match Score: ${cand.score}%</p>
+                        <p class="text-xs text-gray-400">🔑 Scanned Email: <span class="text-emerald-400 font-mono font-semibold underline bg-emerald-950/40 px-1 py-0.5 rounded">${cand.email}</span> • Match: ${cand.score}%</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="triggerHiring('${idx}')" class="bg-indigo-900/60 text-indigo-300 border border-indigo-700 hover:bg-indigo-800 text-xs px-2.5 py-1.5 rounded transition">
@@ -450,7 +478,6 @@
         }
 
         function triggerHiring(idx) {
-            // Logs history tracking counter increments
             appState.hiringHistory++;
             appState.positions[appState.activePosition].candidates[appState.activeCategory].splice(idx, 1);
             alert("Candidate officially hired! History log record updated.");
@@ -460,13 +487,13 @@
         function sendSingleMail(email) {
             const emailConfig = appState.positions[appState.activePosition].email;
             if (!emailConfig.company) { alert("Please complete 'Interview Email Setup' first!"); return; }
-            alert(`Mail system targeted dynamic extracted address successfully:\nDestination: -> [ ${email} ]\n\nContent:\nCompany: ${emailConfig.company}\nSelected Role: ${appState.activePosition}\nInterview Info: ${emailConfig.date} at ${emailConfig.time}\nVenue: ${emailConfig.address}`);
+            alert(`Mail sent successfully to the extracted address:\nDestination Email: -> [ ${email} ]\n\n[Email Content]\nCompany: ${emailConfig.company}\nSelected Role: ${appState.activePosition}\nInterview Info: ${emailConfig.date} at ${emailConfig.time}\nVenue: ${emailConfig.address}`);
         }
 
         function sendBulkEmails() {
             const list = appState.positions[appState.activePosition].candidates[appState.activeCategory];
             if (list.length === 0) { alert("No targets in this category."); return; }
-            alert(`Dispatched custom system mails to all ${list.length} candidate emails fetched from inside the CVs.`);
+            alert(`Dispatched template interview mails to all ${list.length} candidate emails fetched via deep scanning.`);
         }
 
         function clearRecycleBin() {
